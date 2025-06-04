@@ -12,15 +12,16 @@ const options = {
       description: 'API documentation for the Secure Group Messaging System',
     },
     servers: [
-      process.env.NODE_ENV === 'production'
-        ? {
-            url: prodUrl,
-            description: 'Production server',
-          }
-        : {
-            url: `http://localhost:${process.env.PORT || 5000}`,
-            description: 'Development server',
-          },
+      {
+        url:
+          process.env.NODE_ENV === 'production'
+            ? prodUrl
+            : `http://localhost:${process.env.PORT || 5000}`,
+        description:
+          process.env.NODE_ENV === 'production'
+            ? 'Production server'
+            : 'Development server',
+      },
     ],
     components: {
       securitySchemes: {
@@ -37,8 +38,10 @@ const options = {
       },
     ],
   },
-  apis: ['./src/routes/*.js', './src/models/*.js'], // your swagger doc files
+  apis: ['./src/routes/*.js', './src/models/*.js'],
 };
+
+console.log('NODE_ENV:', process.env.NODE_ENV); // debug log
 
 const specs = swaggerJsdoc(options);
 
