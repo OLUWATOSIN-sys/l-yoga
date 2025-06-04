@@ -3,7 +3,6 @@
 
 ## URLs
 
-- **Production API:** [https://secure-group-api.onrender.com/](https://secure-group-api.onrender.com/)  
 - **Swagger API Docs:** [https://secure-group-api.onrender.com/api-docs](https://secure-group-api.onrender.com/api-docs)  
 - **Development Server:** `http://localhost:5000`
 
