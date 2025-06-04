@@ -4,7 +4,7 @@
 ## URLs
 
 - **Swagger API Docs:** [https://secure-group-api.onrender.com/api-docs](https://secure-group-api.onrender.com/api-docs)  
-- **Development Server:** `http://localhost:5000`
+- **Development Server:** `http://localhost:5000/api-docs`
 
 ---
 
