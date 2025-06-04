@@ -1,7 +1,8 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
-const prodUrl = 'https://secure-group-api.onrender.com'; // replace with your actual production URL
+const prodUrl = 'https://secure-group-api.onrender.com'; // your actual production URL
+const localUrl = `http://localhost:${process.env.PORT || 5000}`; // dev URL
 
 const options = {
   definition: {
@@ -13,14 +14,12 @@ const options = {
     },
     servers: [
       {
-        url:
-          process.env.NODE_ENV === 'production'
-            ? prodUrl
-            : `http://localhost:${process.env.PORT || 5000}`,
-        description:
-          process.env.NODE_ENV === 'production'
-            ? 'Production server'
-            : 'Development server',
+        url: prodUrl,
+        description: 'Production server',
+      },
+      {
+        url: localUrl,
+        description: 'Development server',
       },
     ],
     components: {
