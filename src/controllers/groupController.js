@@ -550,6 +550,91 @@ const getMessages = async (req, res) => {
   }
 };
 
+
+// POST /groups/:groupId/members/:userId
+const addMemberToGroup = async (req, res) => {
+  try {
+    const { groupId, userId } = req.params;
+    const requestingUserId = req.user.userId; // from JWT middleware
+
+    // Find group and user
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: 'Group not found' });
+
+    const userToAdd = await User.findById(userId);
+    if (!userToAdd) return res.status(404).json({ message: 'User not found' });
+
+    // Check if requester is owner or admin
+    const isOwner = group.owner.equals(requestingUserId);
+    const isAdmin = group.admins.includes(requestingUserId);
+    if (!isOwner && !isAdmin) {
+      return res.status(401).json({ message: 'Unauthorized: only owner or admin can add members' });
+    }
+
+    // Check if user already member
+    if (group.members.includes(userId)) {
+      return res.status(400).json({ message: 'User already a member of the group' });
+    }
+
+    // Check max members limit if you want (optional)
+    if (group.maxMembers && group.members.length >= group.maxMembers) {
+      return res.status(400).json({ message: 'Group member limit reached' });
+    }
+
+    // Add member to group and update user joinedGroups
+    group.members.push(userId);
+    await group.save();
+
+    userToAdd.joinedGroups.push(group._id);
+    await userToAdd.save();
+
+    return res.status(200).json({ message: 'Member added to group successfully' });
+  } catch (error) {
+    console.error('Error in addMemberToGroup:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// DELETE /groups/:groupId/members/:userId
+const removeMember = async (req, res) => {
+  try {
+    const groupId = req.params.id;
+    const memberId = req.params.memberId;
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: 'Group not found' });
+
+    const isOwner = group.owner.equals(req.user.userId);
+    const isAdmin = group.admins.includes(req.user.userId);
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to remove members' });
+    }
+
+    if (!group.members.includes(memberId)) {
+      return res.status(400).json({ message: 'User is not a member of this group' });
+    }
+
+    // Prevent removing the group owner
+    if (group.owner.equals(memberId)) {
+      return res.status(400).json({ message: 'Cannot remove the group owner' });
+    }
+
+    group.members.pull(memberId);
+    group.admins.pull(memberId); // Also remove from admins if applicable
+    await group.save();
+
+    await User.findByIdAndUpdate(memberId, {
+      $pull: { joinedGroups: group._id }
+    });
+
+    res.status(200).json({ message: 'Member removed successfully' });
+  } catch (error) {
+    console.error('Error removing member:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // EXPORT
 module.exports = {
   createGroup,
@@ -568,4 +653,6 @@ module.exports = {
   sendMessage,
   getMessages,
   deleteGroup,
+  addMemberToGroup, 
+  removeMember, 
 };
