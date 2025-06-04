@@ -83,7 +83,7 @@
 
    ```bash
    PORT=5000
-   JWT_SECRET=your_jwt_secret
+   JWT_SECRET=jwt_secret
    MONGODB_URI=mongo_db_connection_string
 
 
