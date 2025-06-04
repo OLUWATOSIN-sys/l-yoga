@@ -1,7 +1,4 @@
 # Secure Group Messaging API - Learning Yoga Assesment
-
-A production-ready RESTful API for creating, managing, and messaging in secure public/private groups with AES-128 encryption and full group moderation.
-
 ---
 
 ## URLs
@@ -77,3 +74,26 @@ A production-ready RESTful API for creating, managing, and messaging in secure p
    ```bash
    git clone git@github.com:OLUWATOSIN-sys/l-yoga.git
    cd secure-group-api
+
+2. Install dependencies:
+   
+   ```bash
+   npm install
+
+3. Set environment variables:
+
+   ```bash
+   PORT=5000
+   JWT_SECRET=your_jwt_secret
+   MONGODB_URI=mongo_db_connection_string
+
+
+4. Start the server:
+
+   ```bash
+   npm start
+
+5. Access Swagger Docs:
+   ```bash
+   http://localhost:5000/api-docs
+   
