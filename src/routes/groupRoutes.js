@@ -614,4 +614,129 @@ router.get('/:id/messages', authMiddleware, groupController.getMessages);
 router.delete('/:id', [authMiddleware, checkRole(['owner'])], groupController.deleteGroup);
 
 
+/**
+ * @swagger
+ * /api/groups/{id}/members/{userId}/role:
+ *   patch:
+ *     summary: Update a member's role (Owner/Admin only)
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group ID
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to update role
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [admin, member]
+ *                 description: New role for the user
+ *                 example: admin
+ *     responses:
+ *       200:
+ *         description: Role updated successfully
+ *       400:
+ *         description: Invalid role or cannot change owner
+ *       403:
+ *         description: Not authorized to update roles
+ *       404:
+ *         description: Group or user not found
+ */
+router.patch(
+  '/:id/members/:userId/role',
+  [authMiddleware, checkRole(['owner', 'admin'])],
+  groupController.updateMemberRole
+);
+
+/**
+ * @swagger
+ * /api/groups/{id}/members/{userId}:
+ *   post:
+ *     summary: Add a member to group (Owner/Admin only)
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group ID
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to add
+ *     responses:
+ *       200:
+ *         description: Member added successfully
+ *       400:
+ *         description: User already member or group full
+ *       403:
+ *         description: Not authorized to add members
+ *       404:
+ *         description: Group or user not found
+ */
+router.post(
+  '/:id/members/:userId',
+  [authMiddleware, checkRole(['owner', 'admin'])],
+  groupController.addMemberToGroup
+);
+
+/**
+ * @swagger
+ * /api/groups/{id}/members/{userId}:
+ *   delete:
+ *     summary: Remove a member from group (Owner/Admin only)
+ *     tags: [Groups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Group ID
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to remove
+ *     responses:
+ *       200:
+ *         description: Member removed successfully
+ *       400:
+ *         description: Cannot remove owner or user not member
+ *       403:
+ *         description: Not authorized to remove members
+ *       404:
+ *         description: Group or user not found
+ */
+router.delete(
+  '/:id/members/:userId',
+  [authMiddleware, checkRole(['owner', 'admin'])],
+  groupController.removeMember
+);
+
 module.exports = router;
